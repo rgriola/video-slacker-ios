@@ -30,7 +30,7 @@ enum APIError: LocalizedError {
 
 // MARK: - Empty response sentinel
 
-struct EmptyResponse: Decodable {}
+struct EmptyResponse: Codable {}
 
 // MARK: - APIClient
 
