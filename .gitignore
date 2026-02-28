@@ -1,0 +1,44 @@
+# video-slacker-ios .gitignore
+
+# API keys and secrets — never commit
+Config.plist
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Build
+build/
+*.o
+*.d
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods (not used)
+Pods/
+Podfile.lock
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
