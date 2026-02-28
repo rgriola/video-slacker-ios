@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7860DCA32F538B7200E739A5 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 7860DCA22F538B7200E739A5 /* KeychainAccess */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		788124E32F5386A5005A1C82 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7860DCA32F538B7200E739A5 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = "video-slacker-ios";
 			packageProductDependencies = (
+				7860DCA22F538B7200E739A5 /* KeychainAccess */,
 			);
 			productName = "video-slacker-ios";
 			productReference = 788124D52F5386A4005A1C82 /* video-slacker-ios.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 788124CC2F5386A4005A1C82;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7860DCA12F538B7200E739A5 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 788124D62F5386A4005A1C82 /* Products */;
 			projectDirPath = "";
@@ -578,6 +587,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7860DCA12F538B7200E739A5 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7860DCA22F538B7200E739A5 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7860DCA12F538B7200E739A5 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 788124CD2F5386A4005A1C82 /* Project object */;
 }
