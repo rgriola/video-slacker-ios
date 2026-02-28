@@ -14,6 +14,9 @@ final class ConfigLoader {
     let stagingURL: URL
     let oauthClientId: String
     let oauthRedirectUri: String
+    /// The URL scheme portion of redirectUri (e.g. "videoslacker")
+    var oauthRedirectScheme: String { String(oauthRedirectUri.prefix(while: { $0 != ":" })) }
+    let oauthScopes: [String]
     let enableDebugLogging: Bool
     let enableFileAttachments: Bool
 
@@ -40,11 +43,13 @@ final class ConfigLoader {
         self.stagingURL = stagingURL
 
         if let oauth = dict["oauth"] as? [String: Any] {
-            self.oauthClientId   = oauth["clientId"]    as? String ?? "video-slacker-ios"
-            self.oauthRedirectUri = oauth["redirectUri"] as? String ?? "videoslacker://oauth-callback"
+            self.oauthClientId    = oauth["clientId"]    as? String ?? "video-slacker-ios"
+            self.oauthRedirectUri  = oauth["redirectUri"] as? String ?? "videoslacker://oauth-callback"
+            self.oauthScopes       = oauth["scopes"]      as? [String] ?? ["read", "write"]
         } else {
             self.oauthClientId    = "video-slacker-ios"
-            self.oauthRedirectUri = "videoslacker://oauth-callback"
+            self.oauthRedirectUri  = "videoslacker://oauth-callback"
+            self.oauthScopes       = ["read", "write"]
         }
 
         if let features = dict["features"] as? [String: Any] {

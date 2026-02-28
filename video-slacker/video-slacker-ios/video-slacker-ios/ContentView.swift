@@ -9,14 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
 
-    // Simple local state for Week 1. Week 3 replaces with AuthService.isAuthenticated.
-    @State private var isLoggedIn = false
+    @StateObject private var authService = AuthService.shared
 
     var body: some View {
-        if isLoggedIn {
-            AppShellView(onLogout: { isLoggedIn = false })
-        } else {
-            LoginPlaceholderView(onLogin: { isLoggedIn = true })
+        Group {
+            if authService.isAuthenticated {
+                AppShellView(onLogout: {
+                    Task { await authService.logout() }
+                })
+            } else {
+                LoginPlaceholderView()
+            }
+        }
+        .overlay {
+            if authService.isLoading {
+                ProgressView()
+                    .padding(24)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
+        .alert("Sign-in Error", isPresented: .constant(authService.errorMessage != nil)) {
+            Button("OK") { authService.errorMessage = nil }
+        } message: {
+            Text(authService.errorMessage ?? "")
         }
     }
 }
@@ -60,10 +75,11 @@ struct AppShellView: View {
     }
 }
 
-// MARK: - LoginPlaceholderView (stub)
+// MARK: - LoginPlaceholderView
 
 struct LoginPlaceholderView: View {
-    let onLogin: () -> Void
+
+    @StateObject private var authService = AuthService.shared
 
     var body: some View {
         VStack(spacing: 24) {
@@ -80,19 +96,19 @@ struct LoginPlaceholderView: View {
                     .multilineTextAlignment(.center)
             }
 
-            // TODO Week 3: replace with real OAuth2 PKCE Safari flow
             Button {
-                onLogin()
+                authService.startLogin()
             } label: {
-                Label("Sign in (stub)", systemImage: AppIcons.login)
+                Label("Sign in", systemImage: AppIcons.login)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(hex: "6366F1"))
             .padding(.horizontal, 32)
+            .disabled(authService.isLoading)
 
-            Text("Authentication will open Safari (Week 3)")
+            Text("Opens Safari for secure sign-in")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }

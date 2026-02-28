@@ -15,8 +15,13 @@ struct VideoSlackerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                // TODO Week 3: handle OAuth callback URL
-                // .onOpenURL { url in ... }
+                .onOpenURL { url in
+                    // OAuth2 PKCE callback: videoslacker://oauth-callback?code=...
+                    guard url.scheme == ConfigLoader.shared.oauthRedirectScheme else { return }
+                    Task {
+                        await AuthService.shared.handleCallback(url: url)
+                    }
+                }
         }
     }
 }
