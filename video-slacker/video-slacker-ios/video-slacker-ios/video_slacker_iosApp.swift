@@ -5,6 +5,7 @@
 // Week 3: add AuthService PKCE flow and onOpenURL handler.
 
 import SwiftUI
+import Combine
 
 @main
 struct VideoSlackerApp: App {
