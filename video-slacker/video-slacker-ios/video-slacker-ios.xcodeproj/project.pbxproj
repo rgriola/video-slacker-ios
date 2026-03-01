@@ -33,9 +33,22 @@
 		788124EC2F5386A5005A1C82 /* video-slacker-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "video-slacker-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7860DCF22F53C30A00E739A5 /* Exceptions for "video-slacker-ios" folder in "video-slacker-ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 788124D42F5386A4005A1C82 /* video-slacker-ios */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		788124D72F5386A4005A1C82 /* video-slacker-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7860DCF22F53C30A00E739A5 /* Exceptions for "video-slacker-ios" folder in "video-slacker-ios" target */,
+			);
 			path = "video-slacker-ios";
 			sourceTree = "<group>";
 		};

@@ -9,6 +9,7 @@
 // (fired on any 401 response) to auto-logout stale sessions.
 
 import Foundation
+import Combine
 import AuthenticationServices
 
 @MainActor
@@ -173,7 +174,7 @@ final class AuthService: NSObject, ObservableObject {
                 token: refreshToken,
                 clientId: config.oauthClientId
             )
-            try? await APIClient.shared.post(
+            _ = try? await APIClient.shared.post(
                 "/api/auth/oauth/revoke",
                 body: body,
                 authenticated: false
@@ -219,7 +220,14 @@ final class AuthService: NSObject, ObservableObject {
 
 extension AuthService: ASWebAuthenticationPresentationContextProviding {
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        ASPresentationAnchor()
+        MainActor.assumeIsolated {
+            let scene = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first { $0.activationState == .foregroundActive }
+                ?? UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }.first
+            return UIWindow(windowScene: scene!)
+        }
     }
 }
 
