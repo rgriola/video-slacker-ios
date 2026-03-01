@@ -261,12 +261,17 @@ final class AuthService: NSObject, ObservableObject {
 extension AuthService: ASWebAuthenticationPresentationContextProviding {
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         MainActor.assumeIsolated {
+            // Use the existing key window — do NOT create a new UIWindow(),
+            // as it goes out of scope immediately and deallocates the auth sheet.
             let scene = UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }
                 .first { $0.activationState == .foregroundActive }
                 ?? UIApplication.shared.connectedScenes
                     .compactMap { $0 as? UIWindowScene }.first
-            return UIWindow(windowScene: scene!)
+
+            return scene?.windows.first(where: { $0.isKeyWindow })
+                ?? scene?.windows.first
+                ?? UIWindow(windowScene: scene!)
         }
     }
 }
