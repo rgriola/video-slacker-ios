@@ -37,6 +37,7 @@ final class AuthService: NSObject, ObservableObject {
         // Restore session from Keychain on launch
         if keychain.accessToken != nil {
             isAuthenticated = true
+            SSEService.shared.connect()
         }
         // Listen for 401 auto-logout signal from APIClient
         NotificationCenter.default.addObserver(
@@ -115,6 +116,7 @@ final class AuthService: NSObject, ObservableObject {
             keychain.refreshToken = response.refreshToken
             isAuthenticated       = true
             pkce = nil
+            SSEService.shared.connect()
 
         } catch {
             errorMessage = "Sign-in failed. Please try again."
@@ -182,6 +184,7 @@ final class AuthService: NSObject, ObservableObject {
         }
 
         keychain.clearAll()
+        SSEService.shared.disconnect()
         isAuthenticated = false
     }
 
@@ -190,6 +193,7 @@ final class AuthService: NSObject, ObservableObject {
     @objc private func handleSessionInvalidated() {
         Task { @MainActor in
             keychain.clearAll()
+            SSEService.shared.disconnect()
             isAuthenticated = false
         }
     }
