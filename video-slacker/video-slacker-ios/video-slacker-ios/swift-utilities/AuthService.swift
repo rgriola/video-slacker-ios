@@ -54,10 +54,17 @@ final class AuthService: NSObject, ObservableObject {
     func startLogin() {
         guard let authURL = buildAuthorizationURL() else {
             errorMessage = "Could not build sign-in URL."
+            #if DEBUG
+            print("[AuthService] ❌ buildAuthorizationURL() returned nil")
+            #endif
             return
         }
 
         let callbackScheme = config.oauthRedirectScheme  // "videoslacker"
+        #if DEBUG
+        print("[AuthService] 1️⃣ startLogin — authURL: \(authURL)")
+        print("[AuthService]    callbackScheme: \(callbackScheme)")
+        #endif
 
         webAuthSession = ASWebAuthenticationSession(
             url: authURL,
@@ -66,12 +73,23 @@ final class AuthService: NSObject, ObservableObject {
             Task { @MainActor in
                 guard let self else { return }
                 if let error {
+                    #if DEBUG
+                    print("[AuthService] ❌ ASWebAuthenticationSession error: \(error)")
+                    #endif
                     if (error as NSError).code != ASWebAuthenticationSessionError.canceledLogin.rawValue {
                         self.errorMessage = "Sign-in was cancelled."
                     }
                     return
                 }
-                guard let url = callbackURL else { return }
+                guard let url = callbackURL else {
+                    #if DEBUG
+                    print("[AuthService] ❌ callback URL was nil")
+                    #endif
+                    return
+                }
+                #if DEBUG
+                print("[AuthService] 2️⃣ callback received: \(url)")
+                #endif
                 await self.handleCallback(url: url)
             }
         }
@@ -79,6 +97,9 @@ final class AuthService: NSObject, ObservableObject {
         webAuthSession?.presentationContextProvider = self
         webAuthSession?.prefersEphemeralWebBrowserSession = false
         webAuthSession?.start()
+        #if DEBUG
+        print("[AuthService] 1️⃣ ASWebAuthenticationSession started")
+        #endif
     }
 
     // MARK: - Callback handling
@@ -90,9 +111,22 @@ final class AuthService: NSObject, ObservableObject {
             let code = components.queryItems?.first(where: { $0.name == "code" })?.value,
             let verifier = pkce?.codeVerifier
         else {
+            #if DEBUG
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            print("[AuthService] ❌ handleCallback guard failed")
+            print("[AuthService]    url: \(url)")
+            print("[AuthService]    code param: \(components?.queryItems?.first(where: { $0.name == "code" })?.value ?? "nil")")
+            print("[AuthService]    pkce verifier: \(pkce?.codeVerifier != nil ? "present" : "nil — pkce was cleared!")")
+            #endif
             errorMessage = "Invalid authorization response."
             return
         }
+
+        #if DEBUG
+        print("[AuthService] 3️⃣ handleCallback — exchanging code for tokens")
+        print("[AuthService]    clientId: \(config.oauthClientId)")
+        print("[AuthService]    redirectUri: \(config.oauthRedirectUri)")
+        #endif
 
         isLoading = true
         defer { isLoading = false }
@@ -112,6 +146,10 @@ final class AuthService: NSObject, ObservableObject {
                 authenticated: false
             )
 
+            #if DEBUG
+            print("[AuthService] 4️⃣ token exchange succeeded — isAuthenticated = true")
+            #endif
+
             keychain.accessToken  = response.accessToken
             keychain.refreshToken = response.refreshToken
             isAuthenticated       = true
@@ -121,9 +159,7 @@ final class AuthService: NSObject, ObservableObject {
         } catch {
             errorMessage = "Sign-in failed. Please try again."
             #if DEBUG
-            if config.enableDebugLogging {
-                print("[AuthService] Token exchange failed: \(error)")
-            }
+            print("[AuthService] ❌ token exchange failed: \(error)")
             #endif
         }
     }
