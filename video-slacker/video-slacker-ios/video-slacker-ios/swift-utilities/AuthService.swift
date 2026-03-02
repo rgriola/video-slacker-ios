@@ -34,10 +34,12 @@ final class AuthService: NSObject, ObservableObject {
 
     private override init() {
         super.init()
-        // Restore session from Keychain on launch
+        // Restore session from Keychain on launch.
+        // NOTE: Do NOT call SSEService.shared here — it would create a circular
+        // dependency deadlock (SSEService.init observes AuthService.shared).
+        // SSEService auto-connects when it sees isAuthenticated become true.
         if keychain.accessToken != nil {
             isAuthenticated = true
-            SSEService.shared.connect()
         }
         // Listen for 401 auto-logout signal from APIClient
         NotificationCenter.default.addObserver(
@@ -269,9 +271,17 @@ extension AuthService: ASWebAuthenticationPresentationContextProviding {
                 ?? UIApplication.shared.connectedScenes
                     .compactMap { $0 as? UIWindowScene }.first
 
-            return scene?.windows.first(where: { $0.isKeyWindow })
-                ?? scene?.windows.first
-                ?? UIWindow(windowScene: scene!)
+            if let keyWindow = scene?.windows.first(where: { $0.isKeyWindow }) {
+                return keyWindow
+            }
+            if let firstWindow = scene?.windows.first {
+                return firstWindow
+            }
+            if let scene {
+                return UIWindow(windowScene: scene)
+            }
+            // Last resort — should never reach here in a running app
+            return UIWindow()
         }
     }
 }
